@@ -12,3 +12,4 @@ C:\Users\fbonaldo\Desktop\Cosas\C#\TomarAgua\obj\Debug\net9.0-windows\refint\Tom
 C:\Users\fbonaldo\Desktop\Cosas\C#\TomarAgua\obj\Debug\net9.0-windows\TomarAgua.pdb
 C:\Users\fbonaldo\Desktop\Cosas\C#\TomarAgua\obj\Debug\net9.0-windows\TomarAgua.genruntimeconfig.cache
 C:\Users\fbonaldo\Desktop\Cosas\C#\TomarAgua\obj\Debug\net9.0-windows\ref\TomarAgua.dll
+C:\Users\fbonaldo\Desktop\Cosas\C#\TomarAgua\obj\Debug\net9.0-windows\TomarAgua.sourcelink.json

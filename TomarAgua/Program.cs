@@ -6,45 +6,50 @@ class Ventana_Basica : Form
 {
     public Ventana_Basica()
     {
-        // Configurar tamaño y título
-        this.Text = "Mi Ventana 400x400";
+        // Configurar ventana
+        this.Text = "Ventana con Botón Inteligente";
         this.Width = 400;
         this.Height = 400;
         this.StartPosition = FormStartPosition.CenterScreen;
-        this.FormBorderStyle = FormBorderStyle.FixedDialog;
-        this.MaximizeBox = false;
-        this.MinimizeBox = false;
         this.BackColor = Color.LightBlue;
     }
 }
 
-class Boton_Basico
+class Boton_Basico : Button
 {
-    public Button boton;
+    private Form ventana;
 
     public Boton_Basico(Form ventana)
     {
-        // Crear el botón
-        boton = new Button();
+        this.ventana = ventana;
 
-        // Configurar tamaño y posición
-        boton.Text = "Tome Agua";
-        boton.Width = 100;
-        boton.Height = 50;
-        boton.Top = boton.Height;
-        boton.Left = boton.Width;
+        // Configuración visual
+        this.Text = "Tome Agua";
+        this.Width = 100;
+        this.Height = 50;
+        this.BackColor = Color.LightCoral;
 
-        // Configurar color de fondo
-        boton.BackColor = Color.LightCoral;
-
-        // Agregar evento click
-        boton.Click += (sender, e) =>
+        // Evento click → cambia el color de la ventana
+        this.Click += (sender, e) =>
         {
             ventana.BackColor = Color.LightGreen;
         };
 
-        // Agregar botón a la ventana
-        ventana.Controls.Add(boton);
+        // Suscribirse al evento Resize de la ventana
+        ventana.Resize += (sender, e) => Reposicionar();
+
+        // Posicionarse inicialmente
+        Reposicionar();
+
+        // Agregar el botón a la ventana (se mantiene en Main)
+        ventana.Controls.Add(this);
+    }
+
+    private void Reposicionar()
+    {
+        //int margenInferior = (int)(ventana.ClientSize.Height * 0.10);
+        this.Left = 10; // pegado al borde izquierdo
+        this.Top = ventana.ClientSize.Height  - this.Height - 10;
     }
 }
 

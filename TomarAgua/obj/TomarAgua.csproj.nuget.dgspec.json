@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\TomarAgua.csproj": {}
+    "C:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\TomarAgua.csproj": {}
   },
   "projects": {
-    "c:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\TomarAgua.csproj": {
+    "C:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\TomarAgua.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\TomarAgua.csproj",
+        "projectUniqueName": "C:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\TomarAgua.csproj",
         "projectName": "TomarAgua",
-        "projectPath": "c:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\TomarAgua.csproj",
+        "projectPath": "C:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\TomarAgua.csproj",
         "packagesPath": "C:\\Users\\fbonaldo\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\obj\\",
+        "outputPath": "C:\\Users\\fbonaldo\\Desktop\\Cosas\\C#\\TomarAgua\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\fbonaldo\\AppData\\Roaming\\NuGet\\NuGet.Config",
