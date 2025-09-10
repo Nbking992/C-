@@ -1,0 +1,4 @@
+C:\Users\fbonaldo\Desktop\Cosas\C#\TomarAgua\obj\Debug\net9.0\TomarAgua.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fbonaldo\Desktop\Cosas\C#\TomarAgua\obj\Debug\net9.0\TomarAgua.AssemblyInfoInputs.cache
+C:\Users\fbonaldo\Desktop\Cosas\C#\TomarAgua\obj\Debug\net9.0\TomarAgua.AssemblyInfo.cs
+C:\Users\fbonaldo\Desktop\Cosas\C#\TomarAgua\obj\Debug\net9.0\TomarAgua.csproj.CoreCompileInputs.cache
