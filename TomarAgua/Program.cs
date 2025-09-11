@@ -40,10 +40,10 @@ class Boton_Basico : Button
         };*/
 
         // Suscribirse al evento Resize de la ventana
-        ventana.Resize += (sender, e) => Reposicionar();
+        //ventana.Resize += (sender, e) => Reposicionar();
 
         // Posicionarse inicialmente
-        Reposicionar();
+        //Reposicionar();
 
         // Agregar el botón a la ventana (se mantiene en Main)
         ventana.Controls.Add(this);
@@ -87,7 +87,7 @@ class TextBox_Basico : TextBox
         this.Width = 200;
         this.Height = 50;  
         this.BackColor = Color.White;
-        this.Text = "00:00";
+        this.Text = "¡Recuerde tomar agua!";
         this.Font = new Font("Arial", 16);
         this.TextAlign = HorizontalAlignment.Center;
         this.ReadOnly = true;
@@ -157,19 +157,33 @@ class Program
         timer.Start();
     }
 
-    static void reiniciar(Boton_Basico boton, Ventana_Basica ventana, TextBox_Basico textBox, Timer_Basico timer)
+    static void reiniciar(Boton_Basico boton, Ventana_Basica ventana, TextBox_Basico textBox, Timer_Basico timer, Label_Basico label, Label_Basico cronometro)
     {
         boton.Click += (s, e) =>
          {
              segundos = 0; // Reiniciar contador al hacer clic
              textBox.Text = "¡Gracias por tomar agua!";
              ventana.BackColor = ventana.BackColor == Color.LightGreen ? Color.LightBlue : Color.LightGreen; // Restaurar color original
+             label.Text = label.Text + $" {cronometro.Text}"; // Mantener el texto del cronómetro
              timer.Stop();
+             timer.Start();
+             ventana.ClientSize = new Size(ventana.Width + TextRenderer.MeasureText(label.Text, label.Font).Width, ventana.ClientSize.Height);
          };
+
+        // Ajustar tamaño de la ventana según el texto
+        ventana.ClientSize = new Size(TextRenderer.MeasureText(label.Text, label.Font).Width, ventana.ClientSize.Height);
+        textBox.Width = textBox.Width + TextRenderer.MeasureText(cronometro.Text, cronometro.Font).Width / 2;
+       
+        // Reposicionar controles
+        cronometro.Left = (ventana.ClientSize.Width - cronometro.Width) / 2;
+        textBox.Left = (ventana.ClientSize.Width - textBox.Width) / 2;
+        boton.Top = textBox.Top + textBox.Height + 20;
+        boton.Left = (ventana.ClientSize.Width - boton.Width) / 2;
     }
 
     static void Main()
     {
+        // Crear ventana y controles
         Ventana_Basica ventana = new();
         Boton_Basico boton = new(ventana);
         Timer_Basico timer = new(ventana);
@@ -182,11 +196,9 @@ class Program
         cronometro.Top = label.Top + 40;
         cronometro.Text = "00:00";
 
+        // Iniciar cronómetro y reinicio
         Cronometro(timer, cronometro);
-        reiniciar(boton, ventana, textBox, timer);
-
-        ventana.Width = ventana.Width + TextRenderer.MeasureText(label.Text, label.Font).Width / 2;
-        cronometro.Left = ventana.ClientSize.Width / 2;
+        reiniciar(boton, ventana, textBox, timer, label,cronometro);
 
         // Mostrar ventana
         Application.Run(ventana);
