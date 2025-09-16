@@ -163,13 +163,15 @@ class Program
     {
         int minutos = 0;
         int resto = 0;
+        int horas = 0;
 
         timer.Interval = 1000; // 1 segundo
         timer.Tick += (s, e) =>
         {
-            minutos = segundos / 60;
+            horas = (segundos / 3600) % 24;
+            minutos = (segundos / 60) % 60;
             resto = segundos % 60;
-            label.Text = $"{minutos:D2}:{resto:D2}";
+            label.Text = $"{horas:D2}:{minutos:D2}:{resto:D2}";
             segundos++;
         };
         timer.Start();
