@@ -5,6 +5,8 @@ using Accessibility;
 using System.Drawing.Text;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using System.ComponentModel;
 
 class Ventana_Basica : Form
 {
@@ -16,12 +18,20 @@ class Ventana_Basica : Form
         this.Height = 400;
         this.StartPosition = FormStartPosition.CenterScreen;
         this.BackColor = Color.LightBlue;
+        this.FormBorderStyle = FormBorderStyle.FixedSingle; // Evitar redimensionamiento
+        this.MaximizeBox = false; // Deshabilitar botón de maximizar
     }
 }
 
 class Boton_Basico : Button
 {
     private Ventana_Basica ventana;
+
+    // Propieda nueva (Cosas para el diseñador de windows forms que no tengo en Code)
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+
+    // Propieda nueva
+    public int UltimaVez { get; set; } = 0;
 
     public Boton_Basico(Ventana_Basica ventana)
     {
@@ -30,49 +40,32 @@ class Boton_Basico : Button
         // Configuración visual
         this.Text = "Tome Agua";
         this.Width = 100;
-        this.Height = 50;  
+        this.Height = 50;
         this.BackColor = Color.LightCoral;
-        
-
-        // Evento click → cambia el color de la ventana
-        /*this.Click += (sender, e) =>
-        {
-            ventana.BackColor = Color.LightGreen;
-        };*/
-
-        // Suscribirse al evento Resize de la ventana
-        //ventana.Resize += (sender, e) => Reposicionar();
-
-        // Posicionarse inicialmente
-        //Reposicionar();
 
         // Agregar el botón a la ventana (se mantiene en Main)
         ventana.Controls.Add(this);
     }
 
-    private void Reposicionar()
-    {
-        this.Left = 10;
-        this.Top = ventana.ClientSize.Height  - this.Height - 10;
-    }
 }
 
 class Timer_Basico : Timer
 {
     private Ventana_Basica ventana;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int Segundos { get; set; } = 0;
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int Minutos { get; set; } = 0;
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int Horas { get; set; } = 0;
+
     public Timer_Basico(Ventana_Basica ventana)
     {
         this.ventana = ventana;
-        this.Interval = 1000; // 1 segundos
-        //this.Tick += (sender, e) => CambiarColor();
-        this.Start();
-    }
-
-    private void CambiarColor()
-    {
-        Random rand = new Random();
-        ventana.BackColor = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
+        this.Interval = 1000; // 1seg
     }
 }
 
@@ -155,24 +148,35 @@ class ListBox_Basico : ListBox
     }
 }
 
+class Hora
+{
+    public int TotalSegundos { get; set; } = 0;
+
+    public int Horas => (TotalSegundos / 3600) % 24;
+    public int Minutos => (TotalSegundos / 60) % 60;
+    public int Segundos => TotalSegundos % 60;
+}
+
 class Program
 {
     static int segundos = 0;
 
     static void Cronometro(Timer_Basico timer, Label_Basico label)
     {
-        int minutos = 0;
-        int resto = 0;
-        int horas = 0;
+        var tmp = new Hora
+        {
+            TotalSegundos = segundos
+        };
 
         timer.Interval = 1000; // 1 segundo
         timer.Tick += (s, e) =>
         {
-            horas = (segundos / 3600) % 24;
-            minutos = (segundos / 60) % 60;
-            resto = segundos % 60;
-            label.Text = $"{horas:D2}:{minutos:D2}:{resto:D2}";
+            label.Text = $"{tmp.Horas:D2}:{tmp.Minutos:D2}:{tmp.Segundos:D2}";
             segundos++;
+            tmp.TotalSegundos = segundos;
+            timer.Segundos = segundos;
+            timer.Minutos = tmp.Minutos;
+            timer.Horas = tmp.Horas;
         };
         timer.Start();
     }
@@ -184,41 +188,67 @@ class Program
 
         // Reposicionar controles
         cronometro.Left = (ventana.ClientSize.Width - cronometro.Width) / 2;
+
         textBox.Top = cronometro.Top + cronometro.Height + 20;
         textBox.Left = (ventana.ClientSize.Width - textBox.Width) / 2;
+
         boton.Top = textBox.Top + textBox.Height + 20;
-        boton.Left = (ventana.ClientSize.Width - boton.Width) / 2;
+        boton.Left = (ventana.ClientSize.Width - boton.Width) / 2 - 50;
+
         listBox.Left = (ventana.ClientSize.Width - listBox.Width) / 2;
         listBox.Top = boton.Top + boton.Height + 20;
-
     }
     static void Reiniciar(Boton_Basico boton, Ventana_Basica ventana, TextBox_Basico textBox, Timer_Basico timer, Label_Basico label, Label_Basico cronometro, ListBox_Basico listBox)
     {
+        if (segundos > 0)
+        {
+            segundos = 0; // Reiniciar contador al hacer clic
+            cronometro.Text = "00:00:00";
+            textBox.Text = "";
+            ventana.BackColor = Color.LightBlue; // Restaurar color original
+            timer.Stop();
+            timer.Segundos = 0;
+            boton.UltimaVez = 0;
+        }
+        else
+        {
+            // Iniciar cronómetro
+            Cronometro(timer, cronometro);
+        }
+        // Ajustar tamaño de la ventana según el texto
+        ReposicionarControles(ventana, textBox, boton, label, cronometro, listBox);
+    }
+    static void Marcar(Boton_Basico boton, Ventana_Basica ventana, TextBox_Basico textBox, Label_Basico label, Label_Basico cronometro, ListBox_Basico listBox, Timer_Basico timer)
+    {
+        // Calcular ultima vez
+        if (boton.UltimaVez != 0)
+        {
+            int tiempoTranscurrido = timer.Segundos - boton.UltimaVez;
+            var tmp = new Hora
+            {
+                TotalSegundos = tiempoTranscurrido
+            };
+            listBox.Items.Add($"{tmp.Horas:D2}:{tmp.Minutos:D2}:{tmp.Segundos:D2} - {textBox.Text}");
+        }
+        else
+        {
+            listBox.Items.Add("Tome por Primera vez");
+        }
 
-        segundos = 0; // Reiniciar contador al hacer clic
-        cronometro.Text = "00:00";
+        // Redimensiono el listbox si es necesario
+        int anchoTexto = TextRenderer.MeasureText(listBox.Items[listBox.Items.Count - 1].ToString(), listBox.Font).Width;
+        if (anchoTexto > listBox.Width)
+        {
+            listBox.Width = anchoTexto + 20; // Añadir un poco de margen
+        }
+
+        //listBox.Items.Add($" {cronometro.Text} - {textBox.Text}");
         textBox.Text = "";
-        ventana.BackColor = Color.LightBlue; // Restaurar color original
-        timer.Stop();
-        timer.Start();
+        ventana.BackColor = Color.LightGreen;
+        boton.UltimaVez = timer.Segundos;
 
         // Ajustar tamaño de la ventana según el texto
-        ReposicionarControles(ventana, textBox, boton, label, cronometro,listBox);
-    }
-    static void Marcar(Boton_Basico boton, Ventana_Basica ventana, TextBox_Basico textBox, Timer_Basico timer, Label_Basico label, Label_Basico cronometro, ListBox_Basico listBox)
-    {
-        boton.Click += (s, e) =>
-        {
-            //label.Text += $" {cronometro.Text}"; // Mantener el texto del cronómetro
-            listBox.Items.Add($" {cronometro.Text} - {textBox.Text}");
-            textBox.Text = "";
-            ventana.BackColor = Color.LightGreen;
-            //ventana.BackColor == Color.LightGreen ? Color.LightBlue : Color.LightGreen
-            //Reiniciar(boton, ventana, textBox, timer, label, cronometro, listBox);
-           
-            // Ajustar tamaño de la ventana según el texto
-            ReposicionarControles(ventana, textBox, boton, label, cronometro,listBox);
-        };
+        ReposicionarControles(ventana, textBox, boton, label, cronometro, listBox);
     }
 
     static void Main()
@@ -231,6 +261,7 @@ class Program
         Label_Basico label = new(ventana);
         Label_Basico cronometro = new(ventana);
         ListBox_Basico listBox = new(ventana);
+        Boton_Basico botonReiniciar = new(ventana);
 
 
         // Configurar cronómetro y reinicio
@@ -239,13 +270,41 @@ class Program
         label.Top = 20;
         cronometro.Top = label.Top + label.Height + 10;
 
-        cronometro.Text = "00:00";
+        cronometro.Text = "00:00:00";
         listBox.Items.Add("Marcas de agua tomadas:");
 
+        textBox.KeyDown += (s, e) =>
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true; // Evitar el sonido de "ding"
+                Marcar(boton, ventana, textBox, label, cronometro, listBox, timer);
+            }
+        };
+
+        boton.Click += (s, e) =>
+        {
+            Marcar(boton, ventana, textBox, label, cronometro, listBox, timer);
+        };
+
         // Iniciar cronómetro y reinicio
-        Cronometro(timer, cronometro);
+        //Cronometro(timer, cronometro);
         ReposicionarControles(ventana, textBox, boton, label, cronometro, listBox);
-        Marcar(boton, ventana, textBox, timer, label, cronometro, listBox);
+
+        botonReiniciar.Text = "Iniciar/Reiniciar";
+        botonReiniciar.Width = boton.Width; 
+        botonReiniciar.Height = boton.Height;
+        botonReiniciar.Top = boton.Top;
+        botonReiniciar.Left = boton.Left + boton.Width + 10;
+        botonReiniciar.BackColor = Color.LightGray;
+
+        botonReiniciar.Click += (s, e) =>
+        {
+            Reiniciar(boton, ventana, textBox, timer, label, cronometro, listBox);
+        };
+
+
+        //Marcar(boton, ventana, textBox, label, cronometro, listBox, timer);
         // Mostrar ventana
         Application.Run(ventana);
     }
