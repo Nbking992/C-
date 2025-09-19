@@ -168,16 +168,13 @@ class Program
             TotalSegundos = segundos
         };
 
-        timer.Interval = 1000; // 1 segundo
-        timer.Tick += (s, e) =>
-        {
-            label.Text = $"{tmp.Horas:D2}:{tmp.Minutos:D2}:{tmp.Segundos:D2}";
-            segundos++;
-            tmp.TotalSegundos = segundos;
-            timer.Segundos = segundos;
-            timer.Minutos = tmp.Minutos;
-            timer.Horas = tmp.Horas;
-        };
+        label.Text = $"{tmp.Horas:D2}:{tmp.Minutos:D2}:{tmp.Segundos:D2}";
+        segundos++;
+        tmp.TotalSegundos = segundos;
+        timer.Segundos = segundos;
+        timer.Minutos = tmp.Minutos;
+        timer.Horas = tmp.Horas;
+        
         timer.Start();
     }
     static void ReposicionarControles(Ventana_Basica ventana, TextBox_Basico textBox, Boton_Basico boton, Label_Basico label, Label_Basico cronometro, ListBox_Basico listBox)
@@ -265,13 +262,26 @@ class Program
 
 
         // Configurar cronómetro y reinicio
-        //label.Top = label.Top - 100;
-        //cronometro.Top = label.Top + 40;
-        label.Top = 20;
-        cronometro.Top = label.Top + label.Height + 10;
-
         cronometro.Text = "00:00:00";
         listBox.Items.Add("Marcas de agua tomadas:");
+
+        // Posicionar controles
+        label.Top = 20;
+        cronometro.Top = label.Top + label.Height + 10;
+        ReposicionarControles(ventana, textBox, boton, label, cronometro, listBox);
+
+        botonReiniciar.Text = "Iniciar/Reiniciar";
+        botonReiniciar.Width = boton.Width; 
+        botonReiniciar.Height = boton.Height;
+        botonReiniciar.Top = boton.Top;
+        botonReiniciar.Left = boton.Left + boton.Width + 10;
+        botonReiniciar.BackColor = Color.LightGray;
+
+        // Eventos
+        botonReiniciar.Click += (s, e) =>
+        {
+            Reiniciar(boton, ventana, textBox, timer, label, cronometro, listBox);
+        };
 
         textBox.KeyDown += (s, e) =>
         {
@@ -287,24 +297,11 @@ class Program
             Marcar(boton, ventana, textBox, label, cronometro, listBox, timer);
         };
 
-        // Iniciar cronómetro y reinicio
-        //Cronometro(timer, cronometro);
-        ReposicionarControles(ventana, textBox, boton, label, cronometro, listBox);
-
-        botonReiniciar.Text = "Iniciar/Reiniciar";
-        botonReiniciar.Width = boton.Width; 
-        botonReiniciar.Height = boton.Height;
-        botonReiniciar.Top = boton.Top;
-        botonReiniciar.Left = boton.Left + boton.Width + 10;
-        botonReiniciar.BackColor = Color.LightGray;
-
-        botonReiniciar.Click += (s, e) =>
+        timer.Tick += (s, e) =>
         {
-            Reiniciar(boton, ventana, textBox, timer, label, cronometro, listBox);
+            Cronometro(timer, cronometro);
         };
-
-
-        //Marcar(boton, ventana, textBox, label, cronometro, listBox, timer);
+        
         // Mostrar ventana
         Application.Run(ventana);
     }
